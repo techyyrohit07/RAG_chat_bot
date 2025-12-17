@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Health Assistant</title>
+
+    <!-- Bootstrap & Icons -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+<div class="chat-wrapper">
+    <div class="chat-card">
+
+        <!-- Header -->
+        <div class="chat-header d-flex align-items-center">
+            <img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="bot-avatar">
+            <div class="ml-3">
+                <h6 class="mb-0">HealthBot</h6>
+                <small class="text-muted">Online • Ready to help</small>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div id="messageFormeight" class="chat-body"></div>
+
+        <!-- Input -->
+        <div class="chat-footer">
+            <form id="messageArea" class="d-flex">
+                <input type="text" id="text" name="msg"
+                       class="form-control chat-input"
+                       placeholder="Ask a medical question..."
+                       autocomplete="off" required>
+                <button type="submit" class="btn send-btn ml-2">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script>
+$(document).ready(function () {
+    $("#messageArea").on("submit", function (event) {
+        event.preventDefault();
+
+        const date = new Date();
+        const time = date.getHours() + ":" + date.getMinutes();
+        const rawText = $("#text").val();
+
+        const userHtml = `
+        <div class="message user-msg">
+            <div class="bubble">${rawText}<span>${time}</span></div>
+        </div>`;
+
+        $("#text").val("");
+        $("#messageFormeight").append(userHtml);
+
+        $.ajax({
+            data: { msg: rawText },
+            type: "POST",
+            url: "/get",
+        }).done(function (data) {
+
+            const botHtml = `
+            <div class="message bot-msg">
+                <img src="https://cdn-icons-png.flaticon.com/512/387/387569.png">
+                <div class="bubble">${data}<span>${time}</span></div>
+            </div>`;
+
+            $("#messageFormeight").append(botHtml);
+        });
+    });
+});
+</script>
+
+</body>
+</html>
